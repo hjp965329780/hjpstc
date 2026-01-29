@@ -47,7 +47,7 @@ function getRandomUniqueNumbers(min, max, count) {
 }
 
 /**
- * 主函数：输入 m（示例 10），返回 [1-5 取 2 个, 6-m 取 3 个] 并排序后的数组
+ * 主函数：输入 m（示例 10），随机决定 1-5 取 2 或 3 个，6-m 取对应互斥个数，返回排序后的数组
  * @param {number} m - 输入的最大值（示例：10，要求 ≥10）
  * @returns {number[]} 按从小到大排序的最终数组
  */
@@ -57,13 +57,21 @@ function getRandomSplitArray(m = 10) {
     throw new Error('参数错误：m 必须是大于或等于 10 的整数');
   }
 
-  // 区间 1：1-5 取 2 个
-  const part1 = getRandomUniqueNumbers(1, 5, 2);
-  // 区间 2：6-m 取 3 个
-  const part2 = getRandomUniqueNumbers(6, m, 3);
+  // 步骤 1：随机决定 1-5 区间的取数个数（2 或 3 二选一）
+  const part1Count = Math.random() > 0.5 ? 2 : 3; // 50% 概率取 2，50% 概率取 3
 
-  // 合并数组并从小到大排序
+  // 步骤 2：根据互斥规则，确定 6-m 区间的取数个数
+  const part2Count = part1Count === 2 ? 3 : 2; // 2 对应 3，3 对应 2
+
+  // 步骤 3：分别从两个区间取对应个数的随机数
+  const part1 = getRandomUniqueNumbers(1, 5, part1Count); // 1-5 取 part1Count 个
+  const part2 = getRandomUniqueNumbers(6, m, part2Count); // 6-m 取 part2Count 个
+
+  // 步骤 4：合并数组并从小到大排序
   const result = part1.concat(part2).sort((a, b) => a - b);
+
+  // 可选：打印本次取数规则，方便验证（开发阶段可用，上线后可删除）
+  console.log(`本次取数规则：1-5 取 ${part1Count} 个，6-${m} 取 ${part2Count} 个`);
 
   return result;
 }
