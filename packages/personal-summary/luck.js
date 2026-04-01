@@ -90,8 +90,10 @@ function getRandomSplitArray(m = 10) {
   }
 
   // 1. 随机决定取数数量（互斥规则）
-  const part1Count = Math.random() > 0.5 ? 2 : 3;
-  const part2Count = part1Count === 2 ? 3 : 2;
+  // const part1Count = Math.random() > 0.5 ? 2 : 3
+  const part1Count = 3
+  // const part2Count = part1Count === 2 ? 3 : 2
+  const part2Count = 3
 
   // 2. 生成【强制奇偶混合】的两组随机数
   const part1 = generateValidRandomNumbers(1, 5, part1Count);
@@ -179,3 +181,5 @@ function getRandomSplitArray(m = 10) {
 // (40/6)*9.78 - 60 5.20
 // (110/6)*9.78 - 170 9.29
 // (300/6)*9.78 - 470 18.99
+
+// console.log('-----', (((2000 / 470) * 5) / 6) * 6)
