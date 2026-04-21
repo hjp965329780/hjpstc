@@ -103,12 +103,16 @@ function getRandomSplitArray(m = 10) {
   const result = part1.concat(part2).sort((a, b) => a - b);
 
   // 调试日志（可删除）
-  console.log(`📊 取数规则：1-5取${part1Count}个，6-${m}取${part2Count}个`);
-  console.log(`🔵 part1（1-5）：${part1} | 合规：${isValidMix(part1)}`);
-  console.log(`🟢 part2（6-${m}）：${part2} | 合规：${isValidMix(part2)}`);
-  console.log(`✅ 最终结果：${result}\n`);
+  // console.log(`📊 取数规则：1-5取${part1Count}个，6-${m}取${part2Count}个`);
+  // console.log(`🔵 part1（1-5）：${part1} | 合规：${isValidMix(part1)}`);
+  // console.log(`🟢 part2（6-${m}）：${part2} | 合规：${isValidMix(part2)}`);
+  // console.log(`✅ 最终结果：${result}\n`);
 
   return result;
+}
+
+for (let i = 1; i <= 5; i++) {
+  console.log(getRandomNumbers(10, 1), getRandomNumbers(7, 1), getRandomSplitArray())
 }
 
 // -----------------------------------------------分割线
