@@ -1,0 +1,140 @@
+#!/usr/bin/env node
+/**
+ * 赛车猜号：从 1～N 号车中随机抽出 `count` 个不重复号码，作为「某名次」的候选集合。
+ *
+ * 用法：
+ *   node run.js
+ *   node run.js --count 5
+ *   node run.js -c 6 -r 3          固定第 3 名，6 个候选号
+ *   node run.js -n 5               连续生成 5 组（名次默认可每组随机）
+ *   node run.js -c 5 --rank random 明确指定名次随机
+ *
+ * 参数：
+ *   -c, --count <n>   候选号码个数，默认 6
+ *   -r, --rank <1-10|random>  名次；省略或 random 表示每次随机名次
+ *   -n, --times <n>   生成几组，默认 1
+ *   --cars <n>        车辆总数，默认 10
+ */
+
+function shuffle(arr) {
+  const a = [...arr]
+  for (let i = a.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    ;[a[i], a[j]] = [a[j], a[i]]
+  }
+  return a
+}
+
+function randomInt(min, max) {
+  return min + Math.floor(Math.random() * (max - min + 1))
+}
+
+/**
+ * @param {object} options
+ * @param {number} options.count 候选个数
+ * @param {number} options.cars 车辆总数（号码池 1..cars）
+ * @param {number|null} options.rank 名次 1..cars；null 表示随机名次
+ */
+function generateGuess(options) {
+  const cars = options.cars ?? 10
+  const count = options.count ?? 6
+  if (count < 1 || count > cars) {
+    throw new Error(`count 须在 1～${cars} 之间，当前: ${count}`)
+  }
+  const rank = options.rank == null ? randomInt(1, cars) : options.rank
+  if (rank < 1 || rank > cars) {
+    throw new Error(`rank 须在 1～${cars} 之间，当前: ${rank}`)
+  }
+  const pool = Array.from({ length: cars }, (_, i) => i + 1)
+  const numbers = shuffle(pool)
+    .slice(0, count)
+    .sort((a, b) => a - b)
+  return { rank, numbers, cars, count }
+}
+
+function parseArgs(argv) {
+  const opts = {
+    count: 6,
+    rank: null,
+    times: 1,
+    cars: 10
+  }
+  const args = argv.slice(2)
+  for (let i = 0; i < args.length; i++) {
+    const a = args[i]
+    const next = () => {
+      const v = args[++i]
+      if (v == null) throw new Error(`${a} 缺少值`)
+      return v
+    }
+    if (a === '-c' || a === '--count') opts.count = Number(next())
+    else if (a === '-r' || a === '--rank') {
+      const v = next()
+      opts.rank = /^random$/i.test(v) ? null : Number(v)
+    } else if (a === '-n' || a === '--times') opts.times = Number(next())
+    else if (a === '--cars') opts.cars = Number(next())
+    else if (a === '-h' || a === '--help') opts.help = true
+    else throw new Error(`未知参数: ${a}`)
+  }
+  if (opts.help) return opts
+  if (!Number.isFinite(opts.count) || !Number.isFinite(opts.times) || !Number.isFinite(opts.cars)) {
+    throw new Error('count / times / cars 须为有效数字')
+  }
+  if (opts.rank != null && !Number.isFinite(opts.rank)) {
+    throw new Error('rank 须为数字或 random')
+  }
+  return opts
+}
+
+function printHelp() {
+  console.log(`
+用法: node run.js [选项]
+
+  -c, --count <n>     候选号码个数（默认 6）
+  -r, --rank <n>      名次 1～10，或 random（默认每次随机名次）
+  -n, --times <n>     生成组数（默认 1）
+      --cars <n>      车辆总数（默认 10）
+
+示例:
+  node run.js
+  node run.js --count 5
+  node run.js -c 6 -r 3 -n 10
+`)
+}
+
+function main() {
+  let opts
+  try {
+    // opts = parseArgs(process.argv)
+    // opts = {
+    //   count: 5,
+    //   rank: null,
+    //   times: 7,
+    //   cars: 10
+    // }
+    opts = {
+      count: 6,
+      rank: null,
+      times: 5,
+      cars: 10
+    }
+  } catch (e) {
+    console.error(e.message)
+    process.exit(1)
+    return
+  }
+  if (opts.help) {
+    printHelp()
+    return
+  }
+  const base = { cars: opts.cars, count: opts.count, rank: opts.rank }
+  for (let t = 1; t <= opts.times; t++) {
+    const g = generateGuess(base)
+    const label = opts.times > 1 ? `[${t}/${opts.times}] ` : ''
+    console.log(`${label} ${g.rank}：    ${g.numbers.join(', ')}`)
+  }
+}
+
+main()
+console.log('-----', ((((4539 - 0) / 698) * 5) / 6) * 6)
+// console.log('-----', ((4497 - 0) / 241) * 2)
