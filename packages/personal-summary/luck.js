@@ -50,7 +50,7 @@ const isAllOdd = (arr) => arr.every(num => num % 2 !== 0);
 /** 判断数组是否全为偶数 */
 const isAllEven = (arr) => arr.every(num => num % 2 === 0);
 /** 判断数组是否为有效奇偶混合（非全单、非全双） */
-const isValidMix = (arr) => !isAllOdd(arr) && !isAllEven(arr);
+const isValidMix = arr => arr.length === 1 || (!isAllOdd(arr) && !isAllEven(arr))
 
 // ===================== 新增：生成【符合奇偶混合】的随机数 =====================
 /**
